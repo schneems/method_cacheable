@@ -7,38 +7,38 @@ Johnny Cache
 
 I fell into a burning ring of (slow) methods, but they were cached cached cached, so the they came back super fast...
 
-    ``` ruby
-    class User < ActiveRecord::Base
-      include JohnnyCache
+``` ruby
+  class User < ActiveRecord::Base
+    include JohnnyCache
 
-      has_many :pictures
+    has_many :pictures
 
-      def expensive_method(val)
-        sleep 120
-        return val
-      end
+    def expensive_method(val)
+      sleep 120
+      return val
     end
+  end
 
-    user = User.last
+  user = User.last
 
-    # Call User#expensive_method normally
-    user.expensive_method(22)
-    # => 22
+  # Call User#expensive_method normally
+  user.expensive_method(22)
+  # => 22
 
-    # Fetch User#expensive_method from cache
-    user.cache.expensive_method(22)
-    # => 22
+  # Fetch User#expensive_method from cache
+  user.cache.expensive_method(22)
+  # => 22
 
-    # Call User#expensive_method normally
-    Benchmark.measure { user.expensive_method(22) }.real
-    # => 120.00037693977356
+  # Call User#expensive_method normally
+  Benchmark.measure { user.expensive_method(22) }.real
+  # => 120.00037693977356
 
-    # Fetch User#expensive_method from cache
-    Benchmark.measure { user.cache.expensive_method(22) }.real
-    # => 0.000840902328491211
+  # Fetch User#expensive_method from cache
+  Benchmark.measure { user.cache.expensive_method(22) }.real
+  # => 0.000840902328491211
 
-    # SOOOOOOOO FAST!!
-    ```
+  # SOOOOOOOO FAST!!
+```
 
 
 Install
@@ -57,45 +57,46 @@ Usage
 
 Explicitly write & read methods.
 
-    ``` ruby
-    user.cache(:read).pictures  # => nil
-    user.cache(:write).pictures # => [<# Picture ...>, <# Picture ...>] # refreshes the cache
-    user.cache(:read).pictures  # => [<# Picture ...>, <# Picture ...>]
-    ```
+``` ruby
+  user.cache(:read).pictures  # => nil
+  user.cache(:write).pictures # => [<# Picture ...>, <# Picture ...>] # refreshes the cache
+  user.cache(:read).pictures  # => [<# Picture ...>, <# Picture ...>]
+```
 
 By default the `cache` method will will `:fetch` from the cache store. This means that if the key exists it will be pulled, if not the method will be called, returned, and the key will be set.
 
-    ``` ruby
-    user.cache(:read).expensive_method("w00t") # => nil
-    user.cache.expensive_method("w00t")        # => "w00t" # sets the cache via :fetch
-    user.cache.expensive_method("w00t")        # => "w00t" # pulls from the cache
-    ```
+``` ruby
+  user.cache(:read).expensive_method("w00t") # => nil
+  user.cache.expensive_method("w00t")        # => "w00t" # sets the cache via :fetch
+  user.cache.expensive_method("w00t")        # => "w00t" # pulls from the cache
+```
 
 You can also call `:fetch` explicitly if you prefer (but why, thats more typing)
-    ``` ruby
-    user.cache(:fetch).expensive_method("w00t")  # => "w00t" # pulls from the cache
-    ```
+
+``` ruby
+  user.cache(:fetch).expensive_method("w00t")  # => "w00t" # pulls from the cache
+```
 
 Different method arguments to the method generate different cache objects. I.E. different input => different output, same input => same output
 
-    ``` ruby
-    user.cache.expensive_method(:schneems => :is_awesome).inspect
-    # => {:schneems => :is_awesome}
-    user.cache.expensive_method("j/k lol").inspect
-    # => "j/k lol"
-    ```
+``` ruby
+  user.cache.expensive_method(:schneems => :is_awesome).inspect
+  # => {:schneems => :is_awesome}
+  user.cache.expensive_method("j/k lol").inspect
+  # => "j/k lol"
+```
 
 Configuration
 =============
 
 Any configuration options passed to the cache method will be passed to the cache store (default is [Rails.cache](http://api.rubyonrails.org/classes/ActionController/Caching.html#method-i-cache Rails.cache))
 
-      ``` ruby
-      user.cache(:write, :expires_in => 5.seconds).pictures # => [<# Picture ...>, #... ]
-      user.cache(:read).pictures                            # => [<# Picture ...>, #... ]
-      sleep 10                                              # => 2
-      user.cache(:read).pictures                            # => nil
-      ```
+``` ruby
+  user.cache(:write, :expires_in => 5.seconds).pictures # => [<# Picture ...>, #... ]
+  user.cache(:read).pictures                            # => [<# Picture ...>, #... ]
+  sleep 10                                              # => 2
+  user.cache(:read).pictures                            # => nil
+```
 
 
 One Piece at a Time
