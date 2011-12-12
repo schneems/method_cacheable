@@ -12,14 +12,14 @@ require 'rake'
 require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
-  gem.name = "johnny_cache"
-  gem.homepage = "http://github.com/Schnems/johnny_cache"
+  gem.name = "method_cacheable"
+  gem.homepage = "http://github.com/Schnems/method_cacheable"
   gem.license = "MIT"
   gem.summary = %Q{
     Cache methods quickly and easily. 
     }
   gem.description = %Q{
-    "I've Been Everywhere" and I'm tired of writing cache wrappers "One Piece at a Time" for methods. So if you no longer want to "Walk the Line" then JohnnyCache can help to easily cache your ruby methods. Use this Gem or else you'll get thrown into the "Ring of Fire".
+    Cache methods quickly and easily
   }
   gem.email = "richard.schneeman@gmail.com"
   gem.authors = ["Schneems"]

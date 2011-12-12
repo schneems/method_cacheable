@@ -1,15 +1,13 @@
-require 'rubygems' #todo remove
-
 require 'keytar'
 require 'active_support/concern'
 
 
-# include JohnnyCache
+# include MethodCachable
 #
 #
 # @example
 #   class User < ActiveRecord::Base
-#     include JohnnyCache
+#     include MethodCachable
 #
 #     def expensive_method(val)
 #       sleep 120
@@ -36,8 +34,8 @@ require 'active_support/concern'
 #
 #   # SOOOOOOOO FAST!!
 #
-# @see JohnnyCache#cache More info on cache options
-module JohnnyCache
+# @see MethodCachable#cache More info on cache options
+module MethodCachable
   extend ActiveSupport::Concern
   STORE = nil || Rails.cache
 
@@ -72,7 +70,7 @@ module JohnnyCache
 
 
   module ClassMethods
-    # @see JohnnyCache#cache
+    # @see MethodCachable#cache
     def cache(*args)
       MethodCache.new(self, *args)
     end
@@ -97,7 +95,7 @@ module JohnnyCache
     # @see http://github.com/schneems/keytar Keytar, it builds keys
     # @return the key used to set the cache
     # @example
-    #   cache = User.find(263619).cache   # => #<JohnnyCache::MethodCache ... >
+    #   cache = User.find(263619).cache   # => #<MethodCachable::MethodCache ... >
     #   cache.method = "foo"              # => "foo"
     #   cache.key                         # => "users:foo:263619"
     def key
@@ -111,20 +109,20 @@ module JohnnyCache
     # @see http://api.rubyonrails.org/classes/ActionController/Caching.html#method-i-cache Rails.cache documentation
     def call_cache_operation(options = {})
       if cache_operation == :fetch
-        JohnnyCache::STORE.fetch(key, options) do
+        MethodCachable::STORE.fetch(key, options) do
           caller_object.send method.to_sym, *args
         end
       elsif cache_operation == :read
-        JohnnyCache::STORE.read(key, options)
+        MethodCachable::STORE.read(key, options)
       elsif cache_operation == :write
         val = caller_object.send method.to_sym, *args
-        JohnnyCache::STORE.write(key, val, options)
+        MethodCachable::STORE.write(key, val, options)
       end
     end
 
     # Methods caught by method_missing are passed to the caller_object and used to :write, :read, or :fetch from the cache
     #
-    # @see JohnnyCache#cache
+    # @see MethodCachable#cache
     def method_missing(method, *args, &blk)
       if caller_object.respond_to? method
         self.method = method

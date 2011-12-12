@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 
-describe JohnnyCache::MethodCache do
+describe MethodCachable::MethodCache do
   before(:all) do
     @user = User.new
   end
