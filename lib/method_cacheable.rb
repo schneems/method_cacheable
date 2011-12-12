@@ -36,8 +36,14 @@ require 'active_support/concern'
 #
 # @see MethodCacheable#cache More info on cache options
 module MethodCacheable
+  mattr_accessor :store
   extend ActiveSupport::Concern
-  STORE = nil || Rails.cache
+
+
+  def self.config
+    yield self
+  end
+
 
 
   # @overload cache
@@ -109,14 +115,14 @@ module MethodCacheable
     # @see http://api.rubyonrails.org/classes/ActionController/Caching.html#method-i-cache Rails.cache documentation
     def call_cache_operation(options = {})
       if cache_operation == :fetch
-        MethodCacheable::STORE.fetch(key, options) do
+        MethodCacheable.store.fetch(key, options) do
           caller_object.send method.to_sym, *args
         end
       elsif cache_operation == :read
-        MethodCacheable::STORE.read(key, options)
+        MethodCacheable.store.read(key, options)
       elsif cache_operation == :write
         val = caller_object.send method.to_sym, *args
-        MethodCacheable::STORE.write(key, val, options)
+        MethodCacheable.store.write(key, val, options)
       end
     end
 
