@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 
-describe MethodCachable do
+describe MethodCacheable do
   before(:each) do
     @user = User.new
     @uniq ||= 0

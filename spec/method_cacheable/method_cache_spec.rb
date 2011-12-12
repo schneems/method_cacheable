@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 
-describe MethodCachable::MethodCache do
+describe MethodCacheable::MethodCache do
   before(:all) do
     @user = User.new
   end

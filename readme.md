@@ -1,13 +1,13 @@
 The Cache in Black
 ==================
-Cache method calls and speed up your Ruby on Rails application with MethodCachable.
+Cache method calls and speed up your Ruby on Rails application with MethodCacheable.
 
 Method Cacheable
 ============
 
 ``` ruby
   class User < ActiveRecord::Base
-    include MethodCachable
+    include MethodCacheable
 
     has_many :pictures
 
@@ -43,11 +43,11 @@ Install
 =======
 in your Gemfile
 
-    gem 'method_cachable'
+    gem 'method_cacheable'
 
 then in your models
 
-    include MethodCachable
+    include MethodCacheable
 
 
 Usage

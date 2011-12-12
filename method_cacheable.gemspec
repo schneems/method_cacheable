@@ -38,12 +38,13 @@ Gem::Specification.new do |s|
     "doc/method_list.html",
     "doc/top-level-namespace.html",
     "johnny_cache.gemspec",
-    "lib/method_cachable.rb",
+    "lib/method_cacheable.rb",
     "license.txt",
+    "method_cacheable.gemspec",
     "pkg/johnny_cache-0.0.1.gem",
     "readme.md",
-    "spec/method_cachable/method_cache_spec.rb",
-    "spec/method_cachable_spec.rb",
+    "spec/method_cacheable/method_cache_spec.rb",
+    "spec/method_cacheable_spec.rb",
     "spec/spec_helper.rb"
   ]
   s.homepage = "http://github.com/Schnems/method_cacheable"
@@ -52,8 +53,8 @@ Gem::Specification.new do |s|
   s.rubygems_version = "1.8.10"
   s.summary = "Cache methods quickly and easily."
   s.test_files = [
-    "spec/method_cachable/method_cache_spec.rb",
-    "spec/method_cachable_spec.rb",
+    "spec/method_cacheable/method_cache_spec.rb",
+    "spec/method_cacheable_spec.rb",
     "spec/spec_helper.rb"
   ]
 

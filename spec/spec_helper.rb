@@ -24,9 +24,9 @@ class Rails
 end
 
 
-require 'method_cachable'
+require 'method_cacheable'
 class User
-  include MethodCachable
+  include MethodCacheable
   define_keys :foo
 
   def foo(var=nil)
