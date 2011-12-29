@@ -5,15 +5,14 @@
 
 Gem::Specification.new do |s|
   s.name = "method_cacheable"
-  s.version = "0.0.3"
+  s.version = "0.0.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Schneems"]
-  s.date = "2011-12-12"
+  s.date = "2011-12-29"
   s.description = "\n    Cache methods quickly and easily\n  "
   s.email = "richard.schneeman@gmail.com"
   s.files = [
-    ".rvmrc",
     ".yardoc/checksums",
     ".yardoc/objects/root.dat",
     ".yardoc/proxy_types",
