@@ -10,21 +10,36 @@ class Rails
     self
   end
 
-  def self.fetch(key, options, &block)
+  # not quite the same as deleting but it will do
+  def self.delete(key, options = {})
+    eval("@#{key.gsub(':', '_')} = nil")
+  end
+
+  def self.exist?(key)
+    !eval("@#{key.gsub(':', '_')}").nil?
+  end
+
+  def self.fetch(key, options = {}, &block)
     eval("@#{key.gsub(':', '_')} ||= block.call")
   end
 
-  def self.write(key, val, options, &block)
+  def self.write(key, val, options = {}, &block)
     eval("@#{key.gsub(':', '_')} = val")
   end
 
-  def self.read(key, options)
+  def self.read(key, options = {})
     eval("@#{key.gsub(':', '_')}")
   end
 end
 
-
 require 'method_cacheable'
+
+
+MethodCacheable.config do |config|
+  config.store = Rails.cache
+end
+
+
 class User
   include MethodCacheable
   define_keys :foo

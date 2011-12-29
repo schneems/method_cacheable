@@ -91,24 +91,13 @@ module MethodCacheable
 
     def initialize(caller_object, *method_cache_args)
       cache_operation      = method_cache_args.map {|x| x if x.is_a? Symbol }.compact.first
-      options           = method_cache_args.map {|x| x if x.is_a? Hash   }.compact.first
+      options              = method_cache_args.map {|x| x if x.is_a? Hash   }.compact.first
       self.cache_operation = cache_operation||:fetch
-      self.options      = options
-      self.caller_object       = caller_object
+      self.options         = options
+      self.caller_object   = caller_object
     end
 
-    # Uses keytar to create a key based on the method and caller if no method_key exits
-    # @see http://github.com/schneems/keytar Keytar, it builds keys
-    # @return the key used to set the cache
-    # @example
-    #   cache = User.find(263619).cache   # => #<MethodCacheable::MethodCache ... >
-    #   cache.method = "foo"              # => "foo"
-    #   cache.key                         # => "users:foo:263619"
-    def key
-      key_method = "#{method}_key".to_sym
-      key = caller_object.send key_method, *args if caller_object.respond_to? key_method
-      key ||= caller_object.build_key(:name => method, :args => args)
-    end
+
 
     # Calls the cache based on the given cache_operation
     # @param [Hash] options Options are passed to the cache store
@@ -125,6 +114,43 @@ module MethodCacheable
         MethodCacheable.store.write(key, val, options)
       end
     end
+
+
+    # Uses keytar to create a key based on the method and caller if no method_key exits
+    # @see http://github.com/schneems/keytar Keytar, it builds keys
+    #
+    # Method and arguement can optionally be supplied
+    #
+    # @return the key used to set the cache
+    # @example
+    #   cache = User.find(263619).cache   # => #<MethodCacheable::MethodCache ... >
+    #   cache.method = "foo"              # => "foo"
+    #   cache.key                         # => "users:foo:263619"
+    def key(method = nil, args = nil)
+      if method
+        self.method = method
+        self.args   = args
+      end
+      key_method = "#{method}_key".to_sym
+      key = caller_object.send key_method, *args if caller_object.respond_to? key_method
+      key ||= caller_object.build_key(:name => method, :args => args)
+    end
+
+    # Removes the current key from the cache store
+    def delete(method, args = nil)
+      self.method = method
+      self.args   = args
+      MethodCacheable.store.delete(key, options)
+    end
+
+    # Checks to see if the key exists in the cache store
+    # @return [boolean]
+    def exist?(method, args = nil)
+      self.method = method
+      self.args   = args
+      MethodCacheable.store.exist?(key)
+    end
+    alias :exists? :exist?
 
     # Methods caught by method_missing are passed to the caller_object and used to :write, :read, or :fetch from the cache
     #
