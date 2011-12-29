@@ -87,34 +87,50 @@ module MethodCacheable
   end
 
   class MethodCache
-    attr_accessor :caller_object, :method, :args, :options, :cache_operation
+    attr_accessor :caller, :method, :args, :options, :cache_operation
 
-    def initialize(caller_object, *method_cache_args)
-      cache_operation      = method_cache_args.map {|x| x if x.is_a? Symbol }.compact.first
-      options              = method_cache_args.map {|x| x if x.is_a? Hash   }.compact.first
-      self.cache_operation = cache_operation||:fetch
-      self.options         = options
-      self.caller_object   = caller_object
+    def initialize(caller, *method_cache_args)
+      self.caller          = caller
+      self.cache_operation = method_cache_args.map {|x| x if x.is_a? Symbol }.compact.first||:fetch
+      self.options         = method_cache_args.map {|x| x if x.is_a? Hash   }.compact.first
     end
-
-
 
     # Calls the cache based on the given cache_operation
     # @param [Hash] options Options are passed to the cache store
     # @see http://api.rubyonrails.org/classes/ActionController/Caching.html#method-i-cache Rails.cache documentation
-    def call_cache_operation(options = {})
-      if cache_operation == :fetch
+    def call
+      case cache_operation
+      when :fetch
         MethodCacheable.store.fetch(key, options) do
-          caller_object.send method.to_sym, *args
+          send_to_caller
         end
-      elsif cache_operation == :read
-        MethodCacheable.store.read(key, options)
-      elsif cache_operation == :write
-        val = caller_object.send method.to_sym, *args
-        MethodCacheable.store.write(key, val, options)
+      when :read
+        read(method, args)
+      when :write
+        write(method, args) do
+          send_to_caller
+        end
       end
     end
 
+    def send_to_caller
+      caller.send method.to_sym, *args
+    end
+
+    def write(method, *args, &block)
+      val = block.call
+      MethodCacheable.store.write(key, val, options)
+    end
+
+    def read(method, *args)
+      MethodCacheable.store.read(key, options)
+    end
+
+    def for(method , *args)
+      self.method = method
+      self.args   = args
+      self
+    end
 
     # Uses keytar to create a key based on the method and caller if no method_key exits
     # @see http://github.com/schneems/keytar Keytar, it builds keys
@@ -126,18 +142,16 @@ module MethodCacheable
     #   cache = User.find(263619).cache   # => #<MethodCacheable::MethodCache ... >
     #   cache.method = "foo"              # => "foo"
     #   cache.key                         # => "users:foo:263619"
-    def key(method = nil, args = nil)
-      if method
-        self.method = method
-        self.args   = args
-      end
-      key_method = "#{method}_key".to_sym
-      key = caller_object.send key_method, *args if caller_object.respond_to? key_method
-      key ||= caller_object.build_key(:name => method, :args => args)
+    def key(tmp_method = nil, *tmp_args)
+      tmp_method  ||= method
+      tmp_args    ||= args
+      key_method = "#{tmp_method}_key".to_sym
+      key = caller.send key_method, *tmp_args if caller.respond_to? key_method
+      key ||= caller.build_key(:name => tmp_method, :args => tmp_args)
     end
 
     # Removes the current key from the cache store
-    def delete(method, args = nil)
+    def delete(method, *args)
       self.method = method
       self.args   = args
       MethodCacheable.store.delete(key, options)
@@ -145,23 +159,23 @@ module MethodCacheable
 
     # Checks to see if the key exists in the cache store
     # @return [boolean]
-    def exist?(method, args = nil)
+    def exist?(method, *args)
       self.method = method
       self.args   = args
       MethodCacheable.store.exist?(key)
     end
     alias :exists? :exist?
 
-    # Methods caught by method_missing are passed to the caller_object and used to :write, :read, or :fetch from the cache
+    # Methods caught by method_missing are passed to the caller and used to :write, :read, or :fetch from the cache
     #
     # @see MethodCacheable#cache
     def method_missing(method, *args, &blk)
-      if caller_object.respond_to? method
-        self.method = method
-        self.args = args
-        call_cache_operation(options)
+      self.method = method
+      self.args   = args
+      if caller.respond_to? method
+        call
       else
-        super
+        send_to_caller
       end
     end
   end

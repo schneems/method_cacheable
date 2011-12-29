@@ -42,12 +42,12 @@ describe MethodCacheable do
 
       describe 'read' do
         it 'read should return nil if cache has not been set yet' do
-          user.cache(:read).foo(@uniq).should eq(nil)
+          user.cache(:read).foo(@uniq).should == nil
         end
 
         it 'read should return value if cache has been set' do
           result = user.cache.foo(@uniq)
-          user.cache(:read).foo(@uniq).should eq(result)
+          user.cache(:read).foo(@uniq).should == result
         end
       end
     end
