@@ -5,6 +5,9 @@ Cache method calls and speed up your Ruby on Rails application with MethodCachea
 Method Cacheable
 ============
 
+In your Model include `MethodCacheable`
+
+app/models/user.rb
 ``` ruby
   class User < ActiveRecord::Base
     include MethodCacheable
@@ -16,7 +19,11 @@ Method Cacheable
       return val
     end
   end
+```
 
+Then use the `#cache` method to fetch results from cache when available
+
+```
   user = User.last
 
   # Call User#expensive_method normally
@@ -44,6 +51,15 @@ Install
 in your Gemfile
 
     gem 'method_cacheable'
+
+In an initializer tell MethodCacheable to use the Rails.cache backend. You can use any object here that responds to `#write`, `#read`, and `#fetch`
+
+initializers/method_cacheable.rb
+```ruby
+  MethodCacheable.config do |config|
+    config.store = Rails.cache
+  end
+```
 
 then in your models
 
@@ -106,3 +122,7 @@ Fork away. If you want to chat about a feature idea, or a question you can find 
 licensed under MIT License
 Copyright (c) 2011 Schneems. See LICENSE.txt for
 further details.
+
+
+
+
