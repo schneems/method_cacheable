@@ -1,14 +1,17 @@
-The Cache in Black
-==================
-Cache method calls and speed up your Ruby on Rails application with MethodCacheable.
+
 
 Method Cacheable
 ============
 
+Cache method calls and speed up your Ruby on Rails application with MethodCacheable. It's kindof like [ cache_method](https://github.com/seamusabshere/cache_method?utm_source=rubyweekly&utm_medium=email) but it's more explicit about what's being cached and how.
+
+
 In your Model include `MethodCacheable`
 
 app/models/user.rb
-``` ruby
+
+```ruby
+
   class User < ActiveRecord::Base
     include MethodCacheable
 
@@ -19,6 +22,7 @@ app/models/user.rb
       return val
     end
   end
+
 ```
 
 Then use the `#cache` method to fetch results from cache when available
@@ -55,6 +59,7 @@ in your Gemfile
 In an initializer tell MethodCacheable to use the Rails.cache backend. You can use any object here that responds to `#write`, `#read`, and `#fetch`
 
 initializers/method_cacheable.rb
+
 ```ruby
   MethodCacheable.config do |config|
     config.store = Rails.cache
@@ -122,7 +127,4 @@ Fork away. If you want to chat about a feature idea, or a question you can find 
 licensed under MIT License
 Copyright (c) 2011 Schneems. See LICENSE.txt for
 further details.
-
-
-
 
