@@ -20,6 +20,14 @@ describe MethodCacheable::MethodCache do
 
   end
 
+  describe 'args' do
+    it 'converts non array args to array' do
+      cache = user.cache
+      cache.args = 1
+      cache.args.should == [1]
+    end
+  end
+
   describe 'key' do
     it 'returns the key' do
       user.cache.key(:foo).should == "users:foo:#{user.id}"

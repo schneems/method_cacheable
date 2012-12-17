@@ -89,6 +89,11 @@ module MethodCacheable
   class MethodCache
     attr_accessor :caller, :method, :args, :options, :cache_operation
 
+    def args=(args)
+      args  = [args] unless args.is_a? Array
+      @args = args
+    end
+
     def initialize(caller, *method_cache_args)
       self.caller          = caller
       self.cache_operation = method_cache_args.map {|x| x if x.is_a? Symbol }.compact.first||:fetch
