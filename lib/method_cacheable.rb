@@ -143,8 +143,8 @@ module MethodCacheable
     #   cache.method = "foo"              # => "foo"
     #   cache.key                         # => "users:foo:263619"
     def key(tmp_method = nil, *tmp_args)
-      tmp_method  ||= method
-      tmp_args    ||= args
+      tmp_method  = method if tmp_method.blank?
+      tmp_args    = args   if tmp_args.blank?
       key_method = "#{tmp_method}_key".to_sym
       key = caller.send key_method, *tmp_args if caller.respond_to? key_method
       key ||= caller.build_key(:name => tmp_method, :args => tmp_args)

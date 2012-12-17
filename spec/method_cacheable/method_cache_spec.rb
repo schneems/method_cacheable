@@ -24,6 +24,13 @@ describe MethodCacheable::MethodCache do
     it 'returns the key' do
       user.cache.key(:foo).should == "users:foo:#{user.id}"
     end
+
+    it 'returns the key after specifying args and method' do
+      cache = user.cache
+      cache.method = "foo#{@uniq}"
+      cache.args   = [1]
+      cache.key.should == "users:foo#{@uniq}:#{user.id}:1"
+    end
   end
 
   describe 'exists?' do
